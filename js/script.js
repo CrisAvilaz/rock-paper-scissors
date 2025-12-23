@@ -1,64 +1,71 @@
 // Jogo Pedra Papel e Tesoura
 
-// Criar uma variavel para a resposta do PC
-function getComputerChoice(){
-   const computerChoice = Math.floor(Math.random() * (3 - 1 + 1)) + 1
-   if (computerChoice === 1) {
-    return "rock"
-   }
-   else if (computerChoice === 2){
-    return "paper"
-   }
-   else{
-    return "scissors"
-   }
-}
-// Criar uma variavel para a resposta do usuario
-const getHumanChoice = () => {
-   let choice = window.prompt("Choose Rock, Paper or Scissors");
-
-   if (!choice) return null;
-
-   choice = choice.toLowerCase();
-
-   const validChoice = ["rock", "paper", "scissors"];
-
-   if (!validChoice.includes(choice)){
-    alert("Invalid choice, please choose Rock, Paper or Scissors");
-    return getHumanChoice();
-   }
-   return choice;
- } 
 // Criar uma variavel para armazenar o vencedor
 let humanScore = 0;
 let computerScore = 0;
+
+//Atualiza o placar dos jogadores
+function updateScore() {
+  const score = document.getElementById("score");
+  score.textContent = `Player: ${humanScore} | Computer: ${computerScore}`;
+}
+
+// Criar uma variavel para a resposta do PC
+function getComputerChoice() {
+  const choices = ["rock", "paper", "scissors"];
+  const randomIndex = Math.floor(Math.random() * choices.length);
+  return choices[randomIndex];
+}
+
+// Criar uma variavel para a resposta do usuario
+const buttons = document.querySelectorAll("button[data-choice]");
+
+   buttons.forEach(button => {
+      button.addEventListener("click", () => {
+      const humanChoice = button.dataset.choice;
+      const computerChoice = getComputerChoice();
+      playRound(humanChoice, computerChoice);
+   })
+});
+
 // Criar uma função para uma rodada
 function playRound(humanChoice, computerChoice){
-   if (humanChoice === computerChoice){
-      alert("Its a tie");
-   }
-   else if (
-      (humanChoice === "rock" && computerChoice === "scissors") ||
-      (humanChoice === "paper" && computerChoice === "rock") ||
-      (humanChoice === "scissors" && computerChoice === "paper")
-    ){
-      humanScore++
-      alert(`Player Wins! Player score: ${humanScore} Computer Score: ${computerScore}`);
+   const result = document.getElementById("result");
+      if (humanChoice === computerChoice){
+         result.textContent = "It's a tie!";
+         return;
+      }
+
+   const humanWins = 
+         (humanChoice === "rock" && computerChoice === "scissors") ||
+         (humanChoice === "paper" && computerChoice === "rock") ||
+         (humanChoice === "scissors" && computerChoice === "paper");
+      
+   if (humanWins){
+         humanScore++
+         result.textContent = `You win ${humanChoice} beats ${computerChoice}`;
    }
    else{
-      computerScore++
-      alert(`Computer Wins! Player score: ${humanScore} Computer Score: ${computerScore}`);
+         computerScore++
+         result.textContent = `You lose ${computerChoice} beats ${humanChoice}`;
    }
+
+   updateScore();
+   checkWinner();
 }
-// Criar uma função para melhor de 5
-function playGame(){
-  for (let i = 0; i < 5; i++) {
-   const humanSelection = getHumanChoice();
-   const computerSelection = getComputerChoice();
-   playRound(humanSelection, computerSelection);
+//Anuncia o vencedor
+function checkWinner() {
+  if (humanScore === 5) {
+    document.getElementById("result").textContent = "🎉 You won the game!";
+    disableButtons();
+  }
+
+  if (computerScore === 5) {
+    document.getElementById("result").textContent = "💻 Computer won the game!";
+    disableButtons();
+  }
 }
-   alert(`Final Score:
-   Player Score:${humanScore}
-   Computer Score:${computerScore}`)
+
+ function disableButtons() {
+  buttons.forEach(button => button.disabled = true);
 }
-playGame();
